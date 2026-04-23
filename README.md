@@ -83,3 +83,49 @@ cp target/SmartCampusAPI-1.0.war /path/to/tomcat9/webapps/ROOT.war
 The application starts with:
 - 4 rooms: LIB-301, LAB-101, HALL-A, CAFE-1
 - 5 sensors: TEMP-001 (Active), CO2-001 (Active), OCC-001 (Maintenance), TEMP-002 (Active), CO2-002 (Offline)
+
+---
+
+## Sample curl Commands
+
+```bash
+# 1. API Discovery
+curl -X GET http://localhost:8080/api/v1/
+
+# 2. List all rooms
+curl -X GET http://localhost:8080/api/v1/rooms
+
+# 3. Create a room
+curl -X POST http://localhost:8080/api/v1/rooms \
+  -H "Content-Type: application/json" \
+  -d '{"id":"SCI-101","name":"Science Lab","capacity":25}'
+
+# 4. Filter sensors by type
+curl -X GET "http://localhost:8080/api/v1/sensors?type=Temperature"
+
+# 5. Register new sensor (with valid roomId)
+curl -X POST http://localhost:8080/api/v1/sensors \
+  -H "Content-Type: application/json" \
+  -d '{"id":"LIGHT-001","type":"Light","status":"ACTIVE","currentValue":500.0,"roomId":"LAB-101"}'
+
+# 6. Post a sensor reading (updates currentValue automatically)
+curl -X POST http://localhost:8080/api/v1/sensors/TEMP-001/readings \
+  -H "Content-Type: application/json" \
+  -d '{"value":26.3}'
+
+# 7. Get reading history
+curl -X GET http://localhost:8080/api/v1/sensors/TEMP-001/readings
+
+# 8. Attempt delete room with sensors → 409 Conflict
+curl -X DELETE http://localhost:8080/api/v1/rooms/LIB-301
+
+# 9. Invalid roomId → 422 Unprocessable Entity
+curl -X POST http://localhost:8080/api/v1/sensors \
+  -H "Content-Type: application/json" \
+  -d '{"id":"X-001","type":"CO2","roomId":"GHOST-999"}'
+
+# 10. Post to maintenance sensor → 403 Forbidden
+curl -X POST http://localhost:8080/api/v1/sensors/OCC-001/readings \
+  -H "Content-Type: application/json" \
+  -d '{"value":10.0}'
+```

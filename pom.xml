@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.smartcampus</groupId>
+    <artifactId>SmartCampusAPI</artifactId>
+    <version>1.0</version>
+
+    <!--
+        WAR = Web ARchive
+        This tells Maven: package this as a .war file, not a .jar
+        Tomcat loads .war files — it knows exactly how to unpack
+        and run them as web applications.
+    -->
+    <packaging>war</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <jersey.version>2.41</jersey.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            ═══════════════════════════════════════════════════════
+            JERSEY SERVLET CONTAINER
+            This is the KEY difference from the Grizzly version.
+            Instead of jersey-container-grizzly2-http (embedded server),
+            we use jersey-container-servlet — this is the "bridge"
+            that connects Jersey (JAX-RS) to Tomcat (Servlet container).
+
+            How it works:
+            Tomcat understands "Servlets" (a Java standard).
+            Jersey registers itself as a Servlet inside Tomcat.
+            Tomcat passes HTTP requests to Jersey.
+            Jersey routes them to your @Path resource classes.
+            ═══════════════════════════════════════════════════════
+        -->
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <!--
+            ═══════════════════════════════════════════════════════
+            HK2: Jersey's internal dependency injection framework
+            ═══════════════════════════════════════════════════════
+        -->
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <!--
+            ═══════════════════════════════════════════════════════
+            JACKSON: Java object ↔ JSON converter
+            ═══════════════════════════════════════════════════════
+        -->
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <!--
+            ═══════════════════════════════════════════════════════
+            SERVLET API: The Java standard that Tomcat implements.
+            scope="provided" means: don't bundle this in the WAR —
+            Tomcat already has it. "Provided" = "the server provides it."
+            If we bundled it, there would be two copies and conflicts.
+            ═══════════════════════════════════════════════════════
+        -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!--
+                ═══════════════════════════════════════════════════
+                WAR PLUGIN: Builds the .war file properly
+                failOnMissingWebXml=false means: don't fail if
+                web.xml is missing (we'll add it, but just in case)
+                ═══════════════════════════════════════════════════
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <!--
+                ═══════════════════════════════════════════════════
+                COMPILER PLUGIN: Use Java 11
+                ═══════════════════════════════════════════════════
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

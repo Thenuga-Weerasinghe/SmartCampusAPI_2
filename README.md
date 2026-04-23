@@ -1,8 +1,8 @@
 # Smart Campus Sensor & Room Management API
 
 **Module:** 5COSC022W — Client-Server Architectures  
-**Student:** [YOUR FULL NAME]  
-**Student ID:** [YOUR STUDENT ID]  
+**Student:** Don Thenuga Dinayana Weerasinghe  
+**Student ID:** 20233120 / w2153542
 **University:** University of Westminster / IIT  
 **Technology Stack:** Java 11, JAX-RS (Jersey 2.41), Apache Tomcat 9, Jackson JSON
 

@@ -129,3 +129,11 @@ curl -X POST http://localhost:8080/api/v1/sensors/OCC-001/readings \
   -H "Content-Type: application/json" \
   -d '{"value":10.0}'
 ```
+
+## Report: Answers to Coursework Questions
+
+### Part 1, Q1 — JAX-RS Resource Class Lifecycle
+
+In JAX-RS, a new object of the resource class is created for each request.
+So data inside that class does not stay after the request ends.
+To keep data, I used static variables (like lists or maps) so all requests can share the same data.

@@ -132,8 +132,20 @@ curl -X POST http://localhost:8080/api/v1/sensors/OCC-001/readings \
 
 ## Report: Answers to Coursework Questions
 
-### Part 1, Q1 — JAX-RS Resource Class Lifecycle
+### Part 1, Q1 - JAX-RS Resource Class Lifecycle
 
 In JAX-RS, a new object of the resource class is created for each request.
 So data inside that class does not stay after the request ends.
 To keep data, I used static variables (like lists or maps) so all requests can share the same data.
+
+### Part 1, Q2 — HATEOAS: Hypermedia as the Engine of Application State
+
+HATEOAS means the API gives links in the response so the client knows what to do next.
+This is useful because the client doesn’t need to remember all URLs.
+It makes the API easier to use and more flexible.
+
+### Part 2, Q1 — Returning IDs vs Full Objects in Lists
+
+If we return only IDs, the client has to send more requests to get full data.
+If we return full objects, everything is available in one request.
+So returning full objects is better for performance and easier for the client

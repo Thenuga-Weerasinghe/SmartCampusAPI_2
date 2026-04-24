@@ -216,31 +216,31 @@ This distinction helps client developers diagnose the error precisely:
 
 Exposing Java stack traces in HTTP responses constitutes a significant information disclosure vulnerability with multiple attack vectors:
 
-**Technology fingerprinting** — Class names like `org.glassfish.jersey.server.ServerRuntime` immediately identify the exact framework and version. Attackers cross-reference this against CVE databases to find known exploits for that specific version.
+**Technology fingerprinting** - Class names like `org.glassfish.jersey.server.ServerRuntime` immediately identify the exact framework and version. Attackers cross-reference this against CVE databases to find known exploits for that specific version.
 
-**Internal architecture disclosure** — Package names and class hierarchies reveal the system's internal structure: libraries in use, how components are organised, which classes handle which concerns. This is valuable intelligence for planning targeted attacks.
+**Internal architecture disclosure** - Package names and class hierarchies reveal the system's internal structure: libraries in use, how components are organised, which classes handle which concerns. This is valuable intelligence for planning targeted attacks.
 
-**Logic inference** — Method names and line numbers allow attackers to infer code flow, identify error-prone paths, and craft inputs targeting specific vulnerable code paths.
+**Logic inference** - Method names and line numbers allow attackers to infer code flow, identify error-prone paths, and craft inputs targeting specific vulnerable code paths.
 
-**Dependency disclosure** — Stack traces reveal the complete dependency tree. Every dependency is a potential attack surface, and knowing exact versions enables version-specific exploit targeting.
+**Dependency disclosure** - Stack traces reveal the complete dependency tree. Every dependency is a potential attack surface, and knowing exact versions enables version-specific exploit targeting.
 
-**File system paths** — Absolute file paths can reveal server directory structures, potentially useful for directory traversal or file inclusion attacks.
+**File system paths** - Absolute file paths can reveal server directory structures, potentially useful for directory traversal or file inclusion attacks.
 
 The `GlobalExceptionMapper` in this implementation addresses all these risks: it logs the full stack trace exclusively to Tomcat's server-side log files (inaccessible to external parties) and returns only a safe, generic `500 Internal Server Error` JSON response to the client, containing no implementation details.
 
 ### Part 5, Q3 — JAX-RS Filters for Cross-Cutting Concerns
 
-Logging is a "cross-cutting concern" — behaviour that applies uniformly across all endpoints regardless of individual business logic. Implementing it via inline `Logger.info()` calls in each resource method causes multiple structural problems:
+Logging is a "cross-cutting concern" - behaviour that applies uniformly across all endpoints regardless of individual business logic. Implementing it via inline `Logger.info()` calls in each resource method causes multiple structural problems:
 
-**Code duplication** — With 8 resource methods, request/response logging would require at minimum 16 Logger statements scattered across 4 classes.
+**Code duplication** - With 8 resource methods, request/response logging would require at minimum 16 Logger statements scattered across 4 classes.
 
-**Maintenance burden** — Changing the log format (e.g., adding a request correlation ID) requires editing all 16 statements individually. Overlooking any creates inconsistent logs that are harder to parse and analyse.
+**Maintenance burden** - Changing the log format (e.g., adding a request correlation ID) requires editing all 16 statements individually. Overlooking any creates inconsistent logs that are harder to parse and analyse.
 
-**Single Responsibility violation** — A method whose responsibility is "return all sensors" should not also contain infrastructure logging code. Mixing concerns makes methods harder to read, test, and maintain independently.
+**Single Responsibility violation** - A method whose responsibility is "return all sensors" should not also contain infrastructure logging code. Mixing concerns makes methods harder to read, test, and maintain independently.
 
-**Coverage gaps** — Developers adding new endpoints must remember to add logging manually. The filter approach makes logging automatic: every new endpoint is covered with zero additional effort.
+**Coverage gaps** - Developers adding new endpoints must remember to add logging manually. The filter approach makes logging automatic: every new endpoint is covered with zero additional effort.
 
-**Consistency** — The filter guarantees that every request and response is logged in an identical format, making log analysis and automated monitoring reliable.
+**Consistency** - The filter guarantees that every request and response is logged in an identical format, making log analysis and automated monitoring reliable.
 
-The `LoggingFilter` achieves complete API observability in a single class with two methods — replacing what would otherwise be dozens of scattered log statements. This mirrors middleware in Express.js, interceptors in Spring, and decorators in Python — an established, industry-standard architectural pattern for cross-cutting concerns.
+The `LoggingFilter` achieves complete API observability in a single class with two methods - replacing what would otherwise be dozens of scattered log statements. This mirrors middleware in Express.js, interceptors in Spring, and decorators in Python — an established, industry-standard architectural pattern for cross-cutting concerns.
 

@@ -149,3 +149,19 @@ It makes the API easier to use and more flexible.
 If we return only IDs, the client has to send more requests to get full data.
 If we return full objects, everything is available in one request.
 So returning full objects is better for performance and easier for the client
+
+### Part 2, Q2 — Is DELETE Idempotent?
+
+Yes, DELETE is idempotent.
+- **First DELETE /rooms/ENG-202:** Room exists and is empty → removed → `200 OK`
+- **Second DELETE /rooms/ENG-202:** Room doesn't exist → nothing changes → `404 Not Found`
+
+The server state is identical after both calls: ENG-202 does not exist. This satisfies idempotency. The differing status codes reflect the current state at the time of the request, not evidence of a side effect.
+
+### Part 3, Q1 — @Consumes(APPLICATION_JSON) and Media Type Mismatch
+
+`@Consumes(MediaType.APPLICATION_JSON)` instructs JAX-RS to accept only requests with `Content-Type: application/json`. If a client sends `Content-Type: text/plain` or `application/xml`, JAX-RS intercepts the request at the framework layer — **before any resource method code executes** — and automatically returns `415 Unsupported Media Type`.
+
+This is a key advantage of declarative annotation-based validation: content-type enforcement requires zero conditional logic in resource methods. The framework handles the rejection completely, keeping business logic clean.
+
+Symmetrically, `@Produces(APPLICATION_JSON)` tells JAX-RS to set `Content-Type: application/json` on responses and use Jackson for automatic Java-to-JSON serialisation. If a client's `Accept` header requests an unsupported format, JAX-RS returns `406 Not Acceptable` without invoking any resource method.

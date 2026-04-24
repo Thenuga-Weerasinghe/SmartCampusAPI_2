@@ -181,6 +181,66 @@ Query parameters are superior for four reasons:
 
 ### Part 4, Q1 — Sub-Resource Locator Pattern
 
-Sub-resources help split the code into smaller parts.
-Instead of putting everything in one class, we create separate classes.
-This makes the code easier to manage and understand.
+The Sub-Resource Locator pattern allows a JAX-RS resource to delegate URL sub-path handling to a dedicated class, rather than accumulating all nested logic in one monolithic controller.
+
+In this implementation, `SensorResource` contains a method with only `@Path("/{sensorId}/readings")` — no HTTP verb annotation. When JAX-RS receives `GET /sensors/TEMP-001/readings`, it invokes this locator method, receives the `SensorReadingResource` instance, and routes the actual request to that class.
+
+**Architectural benefits over monolithic design:**
+
+**Single Responsibility** — `SensorResource` manages sensor CRUD; `SensorReadingResource` manages reading history. Neither carries unrelated logic, keeping both classes focused and readable.
+
+**Complexity management** — In a large API with many nested paths, concentrating all logic in one class produces files of thousands of lines. Sub-resources keep each class at a manageable size.
+
+**Independent evolution** — Reading storage logic can change completely without touching `SensorResource`.
+
+**Context encapsulation** — The locator passes `sensorId` directly to the sub-resource constructor, providing precise context without global state.
+
+**Testability** — `SensorReadingResource` can be unit tested independently by passing any sensor ID to its constructor, with no need to simulate the parent resource.
+
+### Part 5, Q1 — HTTP 422 vs 404 for Missing Referenced Resources
+
+When a client POSTs a sensor with `roomId: "GHOST-999"`:
+
+**HTTP 404 Not Found** would be semantically incorrect. 404 means "the requested URL does not exist." The URL `/api/v1/sensors` absolutely exists — the endpoint was reached, the request was processed, and a deliberate validation decision was made.
+
+**HTTP 422 Unprocessable Entity** (RFC 4918) means: "The server understands the content type, the syntax is correct, but it cannot process the contained instructions." The JSON is syntactically valid. The Sensor model structure is correct. The problem is that the *semantic value* of `roomId` references a non-existent resource.
+
+This distinction helps client developers diagnose the error precisely:
+- **400** → malformed JSON
+- **404** → the API URL doesn't exist  
+- **422** → valid JSON, valid endpoint, but the referenced resource doesn't exist
+
+422 directs the developer immediately to the data content issue rather than making them question whether their URL is correct. This reduces debugging time and support requests.
+
+### Part 5, Q2 — Cybersecurity Risks of Exposing Stack Traces
+
+Exposing Java stack traces in HTTP responses constitutes a significant information disclosure vulnerability with multiple attack vectors:
+
+**Technology fingerprinting** — Class names like `org.glassfish.jersey.server.ServerRuntime` immediately identify the exact framework and version. Attackers cross-reference this against CVE databases to find known exploits for that specific version.
+
+**Internal architecture disclosure** — Package names and class hierarchies reveal the system's internal structure: libraries in use, how components are organised, which classes handle which concerns. This is valuable intelligence for planning targeted attacks.
+
+**Logic inference** — Method names and line numbers allow attackers to infer code flow, identify error-prone paths, and craft inputs targeting specific vulnerable code paths.
+
+**Dependency disclosure** — Stack traces reveal the complete dependency tree. Every dependency is a potential attack surface, and knowing exact versions enables version-specific exploit targeting.
+
+**File system paths** — Absolute file paths can reveal server directory structures, potentially useful for directory traversal or file inclusion attacks.
+
+The `GlobalExceptionMapper` in this implementation addresses all these risks: it logs the full stack trace exclusively to Tomcat's server-side log files (inaccessible to external parties) and returns only a safe, generic `500 Internal Server Error` JSON response to the client, containing no implementation details.
+
+### Part 5, Q3 — JAX-RS Filters for Cross-Cutting Concerns
+
+Logging is a "cross-cutting concern" — behaviour that applies uniformly across all endpoints regardless of individual business logic. Implementing it via inline `Logger.info()` calls in each resource method causes multiple structural problems:
+
+**Code duplication** — With 8 resource methods, request/response logging would require at minimum 16 Logger statements scattered across 4 classes.
+
+**Maintenance burden** — Changing the log format (e.g., adding a request correlation ID) requires editing all 16 statements individually. Overlooking any creates inconsistent logs that are harder to parse and analyse.
+
+**Single Responsibility violation** — A method whose responsibility is "return all sensors" should not also contain infrastructure logging code. Mixing concerns makes methods harder to read, test, and maintain independently.
+
+**Coverage gaps** — Developers adding new endpoints must remember to add logging manually. The filter approach makes logging automatic: every new endpoint is covered with zero additional effort.
+
+**Consistency** — The filter guarantees that every request and response is logged in an identical format, making log analysis and automated monitoring reliable.
+
+The `LoggingFilter` achieves complete API observability in a single class with two methods — replacing what would otherwise be dozens of scattered log statements. This mirrors middleware in Express.js, interceptors in Spring, and decorators in Python — an established, industry-standard architectural pattern for cross-cutting concerns.
+

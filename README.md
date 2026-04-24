@@ -165,3 +165,22 @@ The server state is identical after both calls: ENG-202 does not exist. This sat
 This is a key advantage of declarative annotation-based validation: content-type enforcement requires zero conditional logic in resource methods. The framework handles the rejection completely, keeping business logic clean.
 
 Symmetrically, `@Produces(APPLICATION_JSON)` tells JAX-RS to set `Content-Type: application/json` on responses and use Jackson for automatic Java-to-JSON serialisation. If a client's `Accept` header requests an unsupported format, JAX-RS returns `406 Not Acceptable` without invoking any resource method.
+
+### Part 3, Q2 — @QueryParam vs Path Parameter for Filtering
+
+**Path parameter approach:** `/api/v1/sensors/type/CO2` — treats `CO2` as a resource identifier, implying a specific addressable resource exists at that path. REST convention uses path segments for nouns identifying resources. There is no "CO2" resource — CO2 is a filter criterion on the sensors collection, making this approach semantically incorrect.
+
+**Query parameter approach:** `/api/v1/sensors?type=CO2` — HTTP convention designates query parameters for collection modifiers: filtering, sorting, pagination, and search.
+
+Query parameters are superior for four reasons:
+
+1. **Semantic accuracy**
+2. **Composability** 
+3. **Optionality**
+4. **Industry convention**
+
+### Part 4, Q1 — Sub-Resource Locator Pattern
+
+Sub-resources help split the code into smaller parts.
+Instead of putting everything in one class, we create separate classes.
+This makes the code easier to manage and understand.

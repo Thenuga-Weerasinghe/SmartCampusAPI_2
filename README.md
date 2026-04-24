@@ -245,6 +245,6 @@ Logging is a "cross-cutting concern" - behaviour that applies uniformly across a
 The `LoggingFilter` achieves complete API observability in a single class with two methods - replacing what would otherwise be dozens of scattered log statements. This mirrors middleware in Express.js, interceptors in Spring, and decorators in Python — an established, industry-standard architectural pattern for cross-cutting concerns.
 
 
-##Demo Video Link 
+## Demo Video Link
 
 https://drive.google.com/drive/folders/1HX7nTQvQnVqxWVwfrEHUHTxFaqtF91oI

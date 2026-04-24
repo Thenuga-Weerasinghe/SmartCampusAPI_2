@@ -1,6 +1,6 @@
 # Smart Campus Sensor & Room Management API
 
-**Module:** 5COSC022W — Client-Server Architectures  
+**Module:** 5COSC022W - Client-Server Architectures  
 **Student:** Don Thenuga Dinayana Weerasinghe  
 **Student ID:** 20233120 / w2153542
 **University:** University of Westminster / IIT  
@@ -10,7 +10,7 @@
 
 ## API Overview
 
-A RESTful web service for the University's Smart Campus initiative, managing campus Rooms and IoT Sensors with full historical reading logs. Built with Java JAX-RS (Jersey 2.41) deployed on Apache Tomcat 9. All data is stored in-memory using `ConcurrentHashMap` — no database.
+A RESTful web service for the University's Smart Campus initiative, managing campus Rooms and IoT Sensors with full historical reading logs. Built with Java JAX-RS (Jersey 2.41) deployed on Apache Tomcat 9. All data is stored in-memory using `ConcurrentHashMap` - no database.
 
 **Base URL:** `http://localhost:8080/api/v1/`
 
@@ -57,14 +57,14 @@ SmartCampusAPI/
 - Apache Maven 3.6+
 - Apache Tomcat 9.x
 
-### Option A — Run in NetBeans (Recommended)
+### Option A - Run in NetBeans 
 1. Open project in NetBeans
 2. Register Tomcat 9 in Services panel
 3. Set project Run → Context Path to `/`
 4. Right-click project → Run
 5. API available at: `http://localhost:8080/api/v1/`
 
-### Option B — Build WAR and Deploy Manually
+### Option B - Build WAR and Deploy Manually
 ```bash
 # Build the WAR file
 mvn clean package

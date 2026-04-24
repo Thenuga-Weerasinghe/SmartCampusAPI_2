@@ -12,9 +12,7 @@ import java.util.Map;
  * Discovery Endpoint — GET /api/v1/
  *
  * Returns API metadata and HATEOAS navigation links.
- * HATEOAS = Hypermedia As The Engine Of Application State.
- * Clients can discover all available resources from this one endpoint,
- * without consulting external documentation.
+
  */
 @Path("/")
 public class DiscoveryResource {

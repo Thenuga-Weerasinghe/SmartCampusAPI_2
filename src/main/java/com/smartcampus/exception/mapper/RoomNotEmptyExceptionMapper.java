@@ -10,9 +10,7 @@ import java.util.Map;
 
 /**
  * Intercepts RoomNotEmptyException and converts it to HTTP 409 Conflict.
- *
- * @Provider — tells Jersey/Tomcat: "I am an exception handler.
- * Register me automatically via package scanning."
+ 
  */
 @Provider
 public class RoomNotEmptyExceptionMapper implements ExceptionMapper<RoomNotEmptyException> {

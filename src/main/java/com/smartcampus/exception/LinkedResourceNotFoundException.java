@@ -1,7 +1,7 @@
 package com.smartcampus.exception;
 
 /**
- * Thrown when a request references a resource (e.g., roomId)
+ * Thrown when a request references a resource 
  * that does not exist in the system.
  * Mapped to HTTP 422 Unprocessable Entity by its mapper.
  */

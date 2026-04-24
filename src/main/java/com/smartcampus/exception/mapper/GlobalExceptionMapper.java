@@ -12,14 +12,6 @@ import java.util.logging.Logger;
 /**
  * The "safety net" — catches ANY exception not handled by
  * a more specific ExceptionMapper.
- *
- * Security principle: NEVER expose stack traces to clients.
- * A stack trace reveals framework versions, class names, and
- * line numbers — everything an attacker needs to find vulnerabilities.
- *
- * This mapper:
- * 1. Logs the FULL trace server-side (only admins can see Tomcat logs)
- * 2. Returns a SAFE, GENERIC message to the external client
  */
 @Provider
 public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {

@@ -13,14 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * SensorReadingResource — sub-resource for /api/v1/sensors/{id}/readings
- *
- * No @Path at class level — this is set by SensorResource's locator method.
- *
- * GET  /readings   → return full historical log for this sensor
- * POST /readings   → record a new reading + update sensor's currentValue
- */
+
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SensorReadingResource {
@@ -31,9 +24,9 @@ public class SensorReadingResource {
         this.sensorId = sensorId;
     }
 
-    // ═══════════════════════════════════════════════════════════
+
     //  GET /api/v1/sensors/{sensorId}/readings
-    // ═══════════════════════════════════════════════════════════
+  
     @GET
     public Response getReadings() {
         Sensor sensor = DataStore.getSensors().get(sensorId);
@@ -58,15 +51,10 @@ public class SensorReadingResource {
         return Response.ok(response).build();
     }
 
-    // ═══════════════════════════════════════════════════════════
+
     //  POST /api/v1/sensors/{sensorId}/readings
     //
-    //  BUSINESS RULE: MAINTENANCE or OFFLINE sensors cannot
-    //  receive new readings — throw SensorUnavailableException.
-    //
-    //  SIDE EFFECT: After saving the reading, update the parent
-    //  sensor's currentValue to keep data consistent across the API.
-    // ═══════════════════════════════════════════════════════════
+
     @POST
     public Response addReading(SensorReading reading) {
         Sensor sensor = DataStore.getSensors().get(sensorId);

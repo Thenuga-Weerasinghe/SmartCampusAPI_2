@@ -11,14 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Room Resource — handles all /api/v1/rooms endpoints
- *
- * GET  /rooms          → list all rooms
- * POST /rooms          → create a room
- * GET  /rooms/{id}     → get one room
- * DELETE /rooms/{id}   → delete a room (blocks if sensors exist)
- */
+
 @Path("/rooms")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

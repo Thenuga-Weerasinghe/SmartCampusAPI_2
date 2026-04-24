@@ -12,26 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Sensor Resource — handles all /api/v1/sensors endpoints
- *
- * GET  /sensors              → list all (optionally filtered by ?type=)
- * GET  /sensors/{id}         → get one sensor
- * POST /sensors              → register new sensor (validates roomId)
- * [locator] /sensors/{id}/readings → delegates to SensorReadingResource
- */
+
+ 
 @Path("/sensors")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
-    // ═══════════════════════════════════════════════════════════
+
     //  GET /api/v1/sensors
     //  GET /api/v1/sensors?type=CO2  (filtered)
     //
-    //  @QueryParam reads the ?type= part of the URL.
-    //  If not provided, 'type' is null and all sensors are returned.
-    // ═══════════════════════════════════════════════════════════
+
     @GET
     public Response getAllSensors(@QueryParam("type") String type) {
         List<Sensor> sensorList = new ArrayList<>(DataStore.getSensors().values());
@@ -52,9 +44,9 @@ public class SensorResource {
         return Response.ok(response).build();
     }
 
-    // ═══════════════════════════════════════════════════════════
+
     //  GET /api/v1/sensors/{sensorId}
-    // ═══════════════════════════════════════════════════════════
+
     @GET
     @Path("/{sensorId}")
     public Response getSensor(@PathParam("sensorId") String sensorId) {
@@ -74,14 +66,9 @@ public class SensorResource {
         return Response.ok(response).build();
     }
 
-    // ═══════════════════════════════════════════════════════════
+  
     //  POST /api/v1/sensors
-    //
-    //  @Consumes(APPLICATION_JSON) — JAX-RS automatically returns
-    //  415 Unsupported Media Type if the client sends anything
-    //  other than Content-Type: application/json.
-    //  Our method code is never even reached in that case.
-    // ═══════════════════════════════════════════════════════════
+
     @POST
     public Response createSensor(Sensor sensor) {
 
@@ -127,18 +114,10 @@ public class SensorResource {
         return Response.status(Response.Status.CREATED).entity(response).build();
     }
 
-    // ═══════════════════════════════════════════════════════════
+
     //  SUB-RESOURCE LOCATOR
     //
-    //  No HTTP verb annotation (@GET, @POST) — this is intentional.
-    //  When JAX-RS sees /sensors/TEMP-001/readings, it calls this
-    //  method, gets the SensorReadingResource instance back, and
-    //  then routes the actual request (GET or POST) to that class.
-    //
-    //  This is the "Sub-Resource Locator" pattern:
-    //  SensorResource LOCATES the right sub-resource handler.
-    //  SensorReadingResource handles the actual logic.
-    // ═══════════════════════════════════════════════════════════
+
     @Path("/{sensorId}/readings")
     public SensorReadingResource getReadingResource(@PathParam("sensorId") String sensorId) {
         return new SensorReadingResource(sensorId);

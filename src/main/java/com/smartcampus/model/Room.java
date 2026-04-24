@@ -10,9 +10,7 @@ public class Room {
     private int capacity;
     private List<String> sensorIds = new ArrayList<>();
 
-    // No-arg constructor — REQUIRED by Jackson for JSON deserialization.
-    // When Jackson reads JSON like {"id":"LIB-301",...},
-    // it first calls this, then calls setId("LIB-301"), etc.
+
     public Room() {}
 
     public Room(String id, String name, int capacity) {

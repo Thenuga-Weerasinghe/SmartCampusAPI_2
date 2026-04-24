@@ -11,18 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * DataStore — the in-memory "database" for the Smart Campus API.
  *
- * WHY static fields?
- * JAX-RS (by default) creates a NEW instance of every resource class
- * for EACH incoming request. Instance fields would be lost after every
- * request. Static fields belong to the CLASS, not instances, so they
- * live for the entire lifetime of the Tomcat application — giving us
- * persistent storage without a real database.
- *
- * WHY ConcurrentHashMap?
- * Tomcat handles multiple simultaneous requests using multiple threads.
- * A plain HashMap is NOT thread-safe — concurrent writes can corrupt
- * its internal structure. ConcurrentHashMap uses internal locking to
- * safely handle concurrent access without blocking reads.
+
  */
 public class DataStore {
 
@@ -30,8 +19,8 @@ public class DataStore {
     private static final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
     private static final Map<String, List<SensorReading>> readings = new ConcurrentHashMap<>();
 
-    // Static initializer — runs ONCE when Tomcat loads this class.
-    // Pre-populates the "database" with sample campus data.
+    // Static initializer runs once when Tomcat loads this class.
+    // Prepopulates the "database" with sample campus data.
     static {
         // --- Rooms ---
         Room r1 = new Room("LIB-301", "Library Quiet Study", 50);
